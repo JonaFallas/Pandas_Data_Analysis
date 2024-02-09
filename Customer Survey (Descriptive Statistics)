@@ -1,0 +1,85 @@
+Customer Survey
+import pandas as pd
+import matplotlib.pyplot as plt
+survey_df= pd.read_csv('Customer-survey-data.csv')
+Exploratory Data Analysis
+survey_df.head(10)
+Customer	Delivery_Experience	Food_quality	Delivery_Speed	Accurate_Order
+0	1	5.0	3.0	4.0	Yes
+1	2	3.0	4.0	3.0	Yes
+2	3	4.0	5.0	2.0	Yes
+3	4	5.0	3.0	4.0	Yes
+4	5	2.0	5.0	1.0	Yes
+5	6	5.0	2.0	5.0	Yes
+6	7	1.0	4.0	3.0	Yes
+7	8	3.0	3.0	2.0	No
+8	9	5.0	1.0	3.0	Yes
+9	10	3.0	5.0	3.0	No
+# Inspecting size of dataset
+len(survey_df)
+10616
+# Checking for duplicates
+survey_df['Customer'].nunique()
+10616
+# Isnpecting for missing data.
+survey_df.count()
+Customer               10616
+Delivery_Experience    10198
+Food_quality           10364
+Delivery_Speed         10377
+Accurate_Order          9956
+dtype: int64
+survey_df.isna().sum()
+Customer                 0
+Delivery_Experience    418
+Food_quality           252
+Delivery_Speed         239
+Accurate_Order         660
+dtype: int64
+I noticed that there is some missing data. I proceeded to drop only rows where customer did not answered any of the questions.
+survey_df = survey_df.dropna(subset = survey_df.columns[1:5], how='all')
+Descriptive Statistics
+I will be using the Food_quality column for calculations.
+Central Tendency
+In this section, I will compute the measures of central tendency - mean, median and mode.
+1. Mean
+quality_mean = survey_df['Food_quality'].mean()
+​
+print(quality_mean)
+3.3320146661520647
+2. Median
+quality_median = survey_df['Food_quality'].median()
+​
+print(quality_median)
+3.0
+3. Mode
+quality_mode = survey_df['Food_quality'].mode()
+​
+print(quality_mode)
+0    5.0
+Name: Food_quality, dtype: float64
+Plot of califications obtained for the 'Food Quality' column.
+survey_df['Food_quality'].value_counts().sort_index(ascending=True).plot(kind='bar', figsize=(5,3))
+<Axes: xlabel='Food_quality'>
+
+This plot confirms that 5 is the value that has the highest frequency (mode) for the Food quality column.
+Measures of Dispersion
+(Minimum and Maximum values, Range, Variance, Standard-deviation, IQR.)
+1. Min and Max values for Food Quality.
+min_quality = survey_df['Food_quality'].min()
+​
+print(min_quality)
+1.0
+print(max_quality)
+max_quality = survey_df['Food_quality'].max()
+​
+print(max_quality)
+5.0
+2. Range
+range_food_quality = max_quality - min_quality
+​
+print(range_food_quality)
+4.0
+3. Variance
+survey_df['Food_quality'].var()
+2.0014028306253944
