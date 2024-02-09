@@ -1,85 +1,586 @@
-Customer Survey
-import pandas as pd
-import matplotlib.pyplot as plt
-survey_df= pd.read_csv('Customer-survey-data.csv')
-Exploratory Data Analysis
-survey_df.head(10)
-Customer	Delivery_Experience	Food_quality	Delivery_Speed	Accurate_Order
-0	1	5.0	3.0	4.0	Yes
-1	2	3.0	4.0	3.0	Yes
-2	3	4.0	5.0	2.0	Yes
-3	4	5.0	3.0	4.0	Yes
-4	5	2.0	5.0	1.0	Yes
-5	6	5.0	2.0	5.0	Yes
-6	7	1.0	4.0	3.0	Yes
-7	8	3.0	3.0	2.0	No
-8	9	5.0	1.0	3.0	Yes
-9	10	3.0	5.0	3.0	No
-# Inspecting size of dataset
-len(survey_df)
-10616
-# Checking for duplicates
-survey_df['Customer'].nunique()
-10616
-# Isnpecting for missing data.
-survey_df.count()
-Customer               10616
-Delivery_Experience    10198
-Food_quality           10364
-Delivery_Speed         10377
-Accurate_Order          9956
-dtype: int64
-survey_df.isna().sum()
-Customer                 0
-Delivery_Experience    418
-Food_quality           252
-Delivery_Speed         239
-Accurate_Order         660
-dtype: int64
-I noticed that there is some missing data. I proceeded to drop only rows where customer did not answered any of the questions.
-survey_df = survey_df.dropna(subset = survey_df.columns[1:5], how='all')
-Descriptive Statistics
-I will be using the Food_quality column for calculations.
-Central Tendency
-In this section, I will compute the measures of central tendency - mean, median and mode.
-1. Mean
-quality_mean = survey_df['Food_quality'].mean()
-​
-print(quality_mean)
-3.3320146661520647
-2. Median
-quality_median = survey_df['Food_quality'].median()
-​
-print(quality_median)
-3.0
-3. Mode
-quality_mode = survey_df['Food_quality'].mode()
-​
-print(quality_mode)
-0    5.0
-Name: Food_quality, dtype: float64
-Plot of califications obtained for the 'Food Quality' column.
-survey_df['Food_quality'].value_counts().sort_index(ascending=True).plot(kind='bar', figsize=(5,3))
-<Axes: xlabel='Food_quality'>
-
-This plot confirms that 5 is the value that has the highest frequency (mode) for the Food quality column.
-Measures of Dispersion
-(Minimum and Maximum values, Range, Variance, Standard-deviation, IQR.)
-1. Min and Max values for Food Quality.
-min_quality = survey_df['Food_quality'].min()
-​
-print(min_quality)
-1.0
-print(max_quality)
-max_quality = survey_df['Food_quality'].max()
-​
-print(max_quality)
-5.0
-2. Range
-range_food_quality = max_quality - min_quality
-​
-print(range_food_quality)
-4.0
-3. Variance
-survey_df['Food_quality'].var()
-2.0014028306253944
+{
+ "cells": [
+  {
+   "cell_type": "markdown",
+   "id": "d79c12dc-32ef-450c-9c8a-45d5fea4f361",
+   "metadata": {},
+   "source": [
+    "# Customer Survey "
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 101,
+   "id": "7ece926f-fea5-436b-b1e4-b0d67ffc2e5b",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "import pandas as pd\n",
+    "import matplotlib.pyplot as plt"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 103,
+   "id": "cb36151b-64ac-4fa4-a71a-ae75b0c65266",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "survey_df= pd.read_csv('Customer-survey-data.csv')"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "8ee2d261-5a85-4e4f-b1dc-7e55152fcfe4",
+   "metadata": {},
+   "source": [
+    "# Exploratory Data Analysis"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 83,
+   "id": "8c96928e-9d61-4eaf-bfe7-323a9a48d0b9",
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/html": [
+       "<div>\n",
+       "<style scoped>\n",
+       "    .dataframe tbody tr th:only-of-type {\n",
+       "        vertical-align: middle;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe tbody tr th {\n",
+       "        vertical-align: top;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe thead th {\n",
+       "        text-align: right;\n",
+       "    }\n",
+       "</style>\n",
+       "<table border=\"1\" class=\"dataframe\">\n",
+       "  <thead>\n",
+       "    <tr style=\"text-align: right;\">\n",
+       "      <th></th>\n",
+       "      <th>Customer</th>\n",
+       "      <th>Delivery_Experience</th>\n",
+       "      <th>Food_quality</th>\n",
+       "      <th>Delivery_Speed</th>\n",
+       "      <th>Accurate_Order</th>\n",
+       "    </tr>\n",
+       "  </thead>\n",
+       "  <tbody>\n",
+       "    <tr>\n",
+       "      <th>0</th>\n",
+       "      <td>1</td>\n",
+       "      <td>5.0</td>\n",
+       "      <td>3.0</td>\n",
+       "      <td>4.0</td>\n",
+       "      <td>Yes</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>1</th>\n",
+       "      <td>2</td>\n",
+       "      <td>3.0</td>\n",
+       "      <td>4.0</td>\n",
+       "      <td>3.0</td>\n",
+       "      <td>Yes</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>2</th>\n",
+       "      <td>3</td>\n",
+       "      <td>4.0</td>\n",
+       "      <td>5.0</td>\n",
+       "      <td>2.0</td>\n",
+       "      <td>Yes</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>3</th>\n",
+       "      <td>4</td>\n",
+       "      <td>5.0</td>\n",
+       "      <td>3.0</td>\n",
+       "      <td>4.0</td>\n",
+       "      <td>Yes</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>4</th>\n",
+       "      <td>5</td>\n",
+       "      <td>2.0</td>\n",
+       "      <td>5.0</td>\n",
+       "      <td>1.0</td>\n",
+       "      <td>Yes</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>5</th>\n",
+       "      <td>6</td>\n",
+       "      <td>5.0</td>\n",
+       "      <td>2.0</td>\n",
+       "      <td>5.0</td>\n",
+       "      <td>Yes</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>6</th>\n",
+       "      <td>7</td>\n",
+       "      <td>1.0</td>\n",
+       "      <td>4.0</td>\n",
+       "      <td>3.0</td>\n",
+       "      <td>Yes</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>7</th>\n",
+       "      <td>8</td>\n",
+       "      <td>3.0</td>\n",
+       "      <td>3.0</td>\n",
+       "      <td>2.0</td>\n",
+       "      <td>No</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>8</th>\n",
+       "      <td>9</td>\n",
+       "      <td>5.0</td>\n",
+       "      <td>1.0</td>\n",
+       "      <td>3.0</td>\n",
+       "      <td>Yes</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>9</th>\n",
+       "      <td>10</td>\n",
+       "      <td>3.0</td>\n",
+       "      <td>5.0</td>\n",
+       "      <td>3.0</td>\n",
+       "      <td>No</td>\n",
+       "    </tr>\n",
+       "  </tbody>\n",
+       "</table>\n",
+       "</div>"
+      ],
+      "text/plain": [
+       "   Customer  Delivery_Experience  Food_quality  Delivery_Speed Accurate_Order\n",
+       "0         1                  5.0           3.0             4.0            Yes\n",
+       "1         2                  3.0           4.0             3.0            Yes\n",
+       "2         3                  4.0           5.0             2.0            Yes\n",
+       "3         4                  5.0           3.0             4.0            Yes\n",
+       "4         5                  2.0           5.0             1.0            Yes\n",
+       "5         6                  5.0           2.0             5.0            Yes\n",
+       "6         7                  1.0           4.0             3.0            Yes\n",
+       "7         8                  3.0           3.0             2.0             No\n",
+       "8         9                  5.0           1.0             3.0            Yes\n",
+       "9        10                  3.0           5.0             3.0             No"
+      ]
+     },
+     "execution_count": 83,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "survey_df.head(10)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 105,
+   "id": "a2791649-217a-44dd-b94b-fb2ce321b0d1",
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "10616"
+      ]
+     },
+     "execution_count": 105,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "# Inspecting size of dataset\n",
+    "len(survey_df)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 108,
+   "id": "f6ba2b44-dd2b-485b-86c8-d79bd2524c67",
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "10616"
+      ]
+     },
+     "execution_count": 108,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "# Checking for duplicates\n",
+    "survey_df['Customer'].nunique()"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 110,
+   "id": "b01927fa-86b1-48dc-9cb2-f8deb1479c3a",
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "Customer               10616\n",
+       "Delivery_Experience    10198\n",
+       "Food_quality           10364\n",
+       "Delivery_Speed         10377\n",
+       "Accurate_Order          9956\n",
+       "dtype: int64"
+      ]
+     },
+     "execution_count": 110,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "# Isnpecting for missing data.\n",
+    "survey_df.count()"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 146,
+   "id": "657413bc-b123-46a4-9c95-c5d85ff3dea6",
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "Customer                 0\n",
+       "Delivery_Experience    418\n",
+       "Food_quality           252\n",
+       "Delivery_Speed         239\n",
+       "Accurate_Order         660\n",
+       "dtype: int64"
+      ]
+     },
+     "execution_count": 146,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "survey_df.isna().sum()"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "240ea1ab-1a36-400b-975e-81c9d5563dc9",
+   "metadata": {},
+   "source": [
+    "#### I noticed that there is some missing data. I proceeded to drop only rows where customer did not answered any of the questions."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 150,
+   "id": "b2ccdd4f-0266-4950-81f4-f168f442810a",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "survey_df = survey_df.dropna(subset = survey_df.columns[1:5], how='all')"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "e740f166-f9fa-4f1c-bef3-d0598ca09b97",
+   "metadata": {},
+   "source": [
+    "# Descriptive Statistics\n",
+    "\n",
+    "####   I will be using the Food_quality column for calculations."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "8b582839-b599-4bd6-9c01-dac875b8257d",
+   "metadata": {},
+   "source": [
+    "## Central Tendency\n",
+    "\n",
+    "\n",
+    "####   In this section, I will compute the measures of central tendency - mean, median and mode.\n"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "55f6c9de-25d8-4e5e-b131-dde8331f0ca3",
+   "metadata": {},
+   "source": [
+    "### 1. Mean"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 173,
+   "id": "736da42d-a3a9-41d9-b012-71d8a2f3ffc0",
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "3.3320146661520647\n"
+     ]
+    }
+   ],
+   "source": [
+    "quality_mean = survey_df['Food_quality'].mean()\n",
+    "\n",
+    "print(quality_mean)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "98c2724d-b861-4ca0-b5d9-3ae7bca3422d",
+   "metadata": {},
+   "source": [
+    "### 2. Median"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 180,
+   "id": "fcbe40b8-7cc8-4ceb-8db8-860efde6c64a",
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "3.0\n"
+     ]
+    }
+   ],
+   "source": [
+    "quality_median = survey_df['Food_quality'].median()\n",
+    "\n",
+    "print(quality_median)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "b543effe-37d6-4ccf-a8ab-13e166e35146",
+   "metadata": {},
+   "source": [
+    "### 3. Mode"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 191,
+   "id": "89e54f6c-0a7d-46bb-9108-880868273806",
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "0    5.0\n",
+      "Name: Food_quality, dtype: float64\n"
+     ]
+    }
+   ],
+   "source": [
+    "quality_mode = survey_df['Food_quality'].mode()\n",
+    "\n",
+    "print(quality_mode)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "deaac29b-3b6f-456c-bf8c-07224fbe90cd",
+   "metadata": {},
+   "source": [
+    "### Plot of califications obtained for the 'Food Quality' column."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 213,
+   "id": "5a735bf8-1ded-43b7-8d6e-4822645d3116",
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "<Axes: xlabel='Food_quality'>"
+      ]
+     },
+     "execution_count": 213,
+     "metadata": {},
+     "output_type": "execute_result"
+    },
+    {
+     "data": {
+      "image/png": "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W7duTJ8+HQCHw8GsWbNYuHAh0dHRREVFsWjRIgYNGmTddSoiItLW2jwQjx8/zr333ss///lPbrzxRpKSkigqKqJ3794APPzww9TV1TFv3jyqqqoYPnw4b7zxBhEREdY6Vq5cSWhoKFOnTqWuro6xY8eSm5tLSEhIW7crIiICXIZAzMvLu+C4zWYjJyeHnJycZmu6dOnCqlWrWLVqVRt3JyIicn76LlMREREUiCIiIoACUUREBFAgioiIAApEERERQIEoIiICKBBFREQABaKIiAigQBQREQEUiCIiIoACUUREBFAgioiIAApEERERQIEoIiICKBBFREQABaKIiAigQBQREQEUiCIiIoACUUREBFAgioiIAApEERERQIEoIiICXAWB+D//8z/06dOHLl26MGTIEP72t7+1d0siInIN6tCBuHXrVrKysli6dCnvvvsut99+O2lpaXz22Wft3ZqIiFxjOnQgrlixglmzZvHTn/6UhIQEnnnmGeLj41mzZk17tyYiIteY0PZuoDn19fUUFxfz6KOPBixPTU2lsLCwSb3f78fv91vzPp8PgJqamjbr6Yz//9psXW2pLbexrXXUfQbab62hfdY62m/Ba8t9dnZdxpgLF5oO6sSJEwYw77zzTsDyJ554wvTv379J/WOPPWYATZo0adKk6bxTWVnZBXOnw54hnmWz2QLmjTFNlgEsXryY7Oxsa/7MmTN8+eWXREdHn7e+PdXU1BAfH09ZWRmRkZHt3c5VQfusdbTfgqd91jodeb8ZYzh16hRut/uCdR02EGNiYggJCcHr9QYsr6ysxOl0Nqm32+3Y7faAZTfccMPlbPGSRUZGdrgDp6PTPmsd7bfgaZ+1Tkfdbw6H46I1HfammrCwMIYMGUJBQUHA8oKCAlJSUtqpKxERuVZ12DNEgOzsbDIzMxk6dCjJyck899xzfPbZZ8ydO7e9WxMRkWtMhw7EadOm8cUXX/CrX/2K8vJyEhMT2bZtG717927v1i6J3W7nsccea/IRrzRP+6x1tN+Cp33WOtfCfrMZc7H7UEVERK59HfYaooiIyJWkQBQREUGBKCIiAigQRUREAAWiiIgIoEAUEREBOvhziCKNjY3885//xGazER0dTUhISHu3JNcoHWuiM8QrrLGxkYqKCiorK2lsbGzvdjqs/Px8brvtNrp164bb7SYuLo5u3bpx22238fLLL7d3ex2ejrOW07F2aa6lY02BeIXoh67l1q5dyz333MPgwYPZunUru3bt4m9/+xtbt25l8ODB3HPPPaxbt6692+yQdJwFR8da612Tx1qb/QFDadbvfvc7ExYWZubOnWvy8/NNYWGheeedd0x+fr6ZO3eusdvt5rnnnmvvNjuM73znO+b3v/99s+Pr16833/72t69gR1cHHWfB07HWOtfqsaZAvAL0QxecLl26mA8//LDZ8dLSUtOlS5cr2NHVQcdZ8HSstc61eqzpI9Mr4MSJE4wYMaLZ8ZSUFD7//PMr2FHHdsstt/Dcc881O75u3TpuueWWK9jR1UHHWfB0rLXOtXqs6S7TK+DsD93TTz993nH90AV6+umnueOOO/B4PKSmpuJ0OrHZbHi9XgoKCvj000/Ztm1be7fZ4eg4C56Otda5Vo81/bWLK2Dnzp3ccccd9O7d+4I/dLfffnt7t9phHDt2jDVr1lBUVITX6wXA5XKRnJzM3Llzuemmm9q3wQ5Ix1nr6FgL3rV6rCkQrxD90MmVoONMrpRr8VhTIIqIiKDnEOUqNGPGDMaMGdPebch1QMfa9UWB2AHohy443/rWt+jdu3d7t3HV0XEWPB1rrXO1Hmu6y7QDcLvddOqk301aatmyZe3dwlVJx1nLGWOw2Ww61lrpaj3WdA1RROQcYWFhvPfeeyQkJLR3K3IF6QyxAygrK+Oxxx7jD3/4Q3u30mHU1dVRXFxMVFQUAwcODBj76quv+N///V9+/OMft1N3HVdpaSlFRUUkJydz88038+GHH/Lss8/i9/v50Y9+dFV+jHU5ZWdnn3d5Y2MjTz75JNHR0QCsWLHiSrZ11amqqmLjxo0cOXKEuLg4ZsyYQXx8fHu3FTSdIXYA7733Ht/97nev+m+KbysfffQRqampfPbZZ9hsNm6//XZefPFF4uLiAKioqMDtdmt/ncPj8XDnnXfSvXt3/u///o/8/Hx+/OMfc+utt2KMYefOnfzlL39RKH5Dp06duPXWW7nhhhsClu/cuZOhQ4cSHh6OzWbjrbfeap8GOyi3282BAweIjo7m6NGjpKSkADBo0CBKS0s5deoURUVF3Hzzze3caXAUiFfAK6+8csHxf/zjHyxcuFD/wf8/kydP5uuvv2bDhg1UV1eTnZ3NwYMH2bFjB7169VIgNiMlJYUxY8bw+OOPk5eXx7x583jggQd44oknAFi6dCn79u3jjTfeaOdOO47ly5ezbt06fv/73wf8otC5c2fee++9Jp9OyL906tQJr9dLbGws9957L16vl9dee41u3brh9/v54Q9/SJcuXfjjH//Y3q0Gpz2+QPV6Y7PZTKdOnYzNZmt26tSpU3u32WHExsaa999/P2DZvHnzTK9evcwnn3xivF6v9td5REZGmiNHjhhjjGlsbDShoaGmuLjYGj9w4IBxOp3t1V6HtXfvXtO/f3+zcOFCU19fb4wxJjQ01Bw6dKidO+u4bDabqaioMMYY06dPH/Pmm28GjBcVFZmePXu2R2uX5Oq7DegqFBcXx0svvcSZM2fOO/39739v7xY7lLq6OkJDAy9v//a3vyUjI4ORI0fy0UcftVNnV49OnTrRpUuXgI8CIyIi8Pl87ddUBzVs2DCKi4s5efIkQ4cO5cCBA9hstvZuq8M7u4/8fj9OpzNgzOl0cvLkyfZo65IoEK+AIUOGXDD0bDYbRp9cW26++Wb279/fZPmqVau48847ycjIaIeuOr6bbrqJjz/+2JrfvXs3vXr1subLysqs67ASqHv37mzcuJHFixczfvx4fRzfAmPHjuW73/0uNTU1TX5J/eyzz4iJiWmnzlpPd5leAf/+7//O6dOnmx3v27cvb7/99hXsqGObPHkyL774IpmZmU3GVq9ezZkzZ/jd737XDp11bA888EDAf+SJiYkB46+//rpuqLmIe+65hxEjRlBcXKwH8i/gscceC5jv1q1bwPyrr7561X2xN+imGhEREUAfmYqIiAAKRBEREUCBKCIiAigQRa4KO3bswGazUV1d3d6tWI4dO4bNZqOkpATomD2KBEOBKNIKM2fOxGazNZm++djD9SYlJYXy8nIcDgcAubm5Tb4STaQj02MXIq00ceJENmzYELDsxhtvbKdu2l9YWBgul6u92xBpNZ0hirSS3W7H5XIFTCEhIezcuZPvfe972O124uLiePTRR/n666+t1/n9fhYsWEBsbCxdunRhxIgR7Nu3L2Dd27Zto3///nTt2pXRo0dz7NixoHrLzc2lV69edOvWjcmTJ/P0008HnK3NnDmTu+66K+A1WVlZjBo1ypr3eDyMGDGCG264gejoaNLT0/nkk0+afc9vfmS6Y8cOfvKTn+Dz+ayz55ycHH71q18xaNCgJq8dMmQIv/jFL4LaRpG2pkAUaUMnTpzgBz/4AcOGDeO9995jzZo1rF+/nscff9yqefjhh3nppZfYuHEjf//73+nbty8TJkzgyy+/BP71jTJTpkzhBz/4ASUlJfz0pz/l0UcfbXEPe/bs4b777mPevHmUlJQwevTogPdvqdOnT5Odnc2+fft488036dSpE5MnT+bMmTMXfW1KSgrPPPMMkZGRlJeXU15ezqJFi7jvvvv44IMPAn4BeP/993n33XeZOXNm0D2KtKl2/i5VkavSjBkzTEhIiAkPD7emH/7wh2bJkiVmwIAB5syZM1btb3/7W9O9e3fT2NhoamtrTefOnc2WLVus8fr6euN2u81TTz1ljDFm8eLFJiEhIWAdjzzyiAFMVVXVRXu79957zcSJEwOWTZs2zTgcjoD+77zzzoCan/3sZ2bkyJHNrreystIA5sCBA8YYY44ePWoA8+677xpjjHn77bcDetywYUPAe56VlpZmHnjgAWs+KyvLjBo16qLbJXK56QxRpJVGjx5NSUmJNf33f/83paWlJCcnB3w59G233UZtbS3Hjx/nk08+oaGhgdtuu80a79y5M9/73vcoLS0F/vVHfpOSkgLWkZyc3OK+zvbwTcG8/qxPPvmE6dOn8+1vf5vIyEj69OkD/Ot7Ki/F7NmzefHFF/nqq69oaGhgy5Yt3HfffZe0TpG2oJtqRFopPDycvn37BiwzxjT5Swnm/3074je/xP18NWeXmUv8NsWWvL5Tp05N6hoaGgLmJ02aRHx8POvWrcPtdnPmzBkSExOpr6+/pP4mTZqE3W4nPz8fu92O3+/n7rvvvqR1irQFnSGKtKGBAwdSWFgYEDaFhYVERETwrW99i759+xIWFsauXbus8YaGBvbv309CQoK1jqKiooD1njt/sR4u9vobb7yR8vLygGVnnycE+OKLLygtLeU//uM/GDt2LAkJCVRVVbW4B/jXXafn+6sRoaGhzJgxgw0bNrBhwwbuueeeJl8OLdIu2u/TWpGr1/muwRljzPHjx023bt3Mgw8+aEpLS83LL79sYmJizGOPPWbV/OxnPzNut9u8/vrr5tChQ2bGjBmmR48e5ssvvzTGGPPpp5+asLAw8/Of/9x8+OGHZsuWLcblcrX4GuLu3buNzWYzv/71r83hw4fNqlWrzA033BBwPc/j8RibzWY2btxoPvroI/OLX/zCREZGWtcQGxsbTXR0tPnRj35kjhw5Yt58800zbNgwA5j8/HxjzMWvIb7zzjsGMNu3bzcnT540p0+ftt7/o48+MiEhISYkJMQUFRW1dLeLXFYKRJFWaC4QjTFmx44dZtiwYSYsLMy4XC7zyCOPmIaGBmu8rq7OzJ8/38TExBi73W5uu+02s3fv3oB1vPrqq6Zv377Gbreb22+/3fzhD39ocSAaY8z69etNz549TdeuXc2kSZPMf/3XfzW5weUXv/iFcTqdxuFwmJ///OfmoYceCrippqCgwCQkJBi73W4GDx5sduzYEVQgGmPM3LlzTXR0tAECfikwxpjbb7/dDBw4sEXbI3Il6M8/iVwHcnNzycrK6jBfq2aM4eabb+b+++8nOzu7vdsRAXRTjYhcYZWVlWzatIkTJ07wk5/8pL3bEbHophqRq0xaWhrdu3c/77Rs2bL2bu+inE4nTz75JM899xw9evRo73ZELPrIVOQqc+LECerq6s47FhUVRVRU1BXuSOTaoEAUERFBH5mKiIgACkQRERFAgSgiIgIoEEVERAAFooiICKBAFBERARSIIiIigAJRREQEgP8PujbQ2tBJmnIAAAAASUVORK5CYII=",
+      "text/plain": [
+       "<Figure size 500x300 with 1 Axes>"
+      ]
+     },
+     "metadata": {},
+     "output_type": "display_data"
+    }
+   ],
+   "source": [
+    "survey_df['Food_quality'].value_counts().sort_index(ascending=True).plot(kind='bar', figsize=(5,3))"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "6f61b03d-0956-47dd-b15a-c55017fead45",
+   "metadata": {},
+   "source": [
+    "###### This plot confirms that 5 is the value that has the highest frequency (mode) for the Food quality column."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "3c40d4c9-99d2-45c1-8813-0e4fc0dc3a21",
+   "metadata": {},
+   "source": [
+    "## Measures of Dispersion\n",
+    "#### (Minimum and Maximum values, Range, Variance, Standard-deviation, IQR.)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "46cc5577-6389-4ba9-aa1a-44fc49305521",
+   "metadata": {},
+   "source": [
+    "### 1. Min and Max values for Food Quality."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 229,
+   "id": "25d8ce51-d8bc-45d8-a53d-0431c603fc11",
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "1.0\n"
+     ]
+    }
+   ],
+   "source": [
+    "min_quality = survey_df['Food_quality'].min()\n",
+    "\n",
+    "print(min_quality)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 231,
+   "id": "74e4e0ee-969b-4b37-b8b7-1c650c703d9e",
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "5.0\n"
+     ]
+    }
+   ],
+   "source": [
+    "max_quality = survey_df['Food_quality'].max()\n",
+    "\n",
+    "print(max_quality)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "96e8b00a-d9b8-4ad7-b68e-30a4de4e04f3",
+   "metadata": {},
+   "source": [
+    "### 2. Range"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "9d10916f-dc13-4ecd-a431-fa4ec7cdbc92",
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "4.0\n"
+     ]
+    }
+   ],
+   "source": [
+    "range_food_quality = max_quality - min_quality\n",
+    "\n",
+    "print(range_food_quality)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "81b42f64-c82e-4970-87a3-3228c8800c9f",
+   "metadata": {},
+   "source": [
+    "### 3. Variance"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 252,
+   "id": "27f265ed-3252-4acf-9ea2-e58ed32da04c",
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "2.0014028306253944"
+      ]
+     },
+     "execution_count": 252,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "survey_df['Food_quality'].var()"
+   ]
+  }
+ ],
+ "metadata": {
+  "kernelspec": {
+   "display_name": "anaconda-panel-2023.05-py310",
+   "language": "python",
+   "name": "conda-env-anaconda-panel-2023.05-py310-py"
+  },
+  "language_info": {
+   "codemirror_mode": {
+    "name": "ipython",
+    "version": 3
+   },
+   "file_extension": ".py",
+   "mimetype": "text/x-python",
+   "name": "python",
+   "nbconvert_exporter": "python",
+   "pygments_lexer": "ipython3",
+   "version": "3.11.5"
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 5
+}
